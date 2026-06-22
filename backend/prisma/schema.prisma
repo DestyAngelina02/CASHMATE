@@ -59,29 +59,43 @@ model Supplier {
 }
 
 model Customer {
-  id           Int           @id @default(autoincrement())
-  name         String
-  phone        String?       @unique
-  address      String?
-  isMember     Boolean       @default(false)
+  id        Int           @id @default(autoincrement())
+  name      String        @db.VarChar(100)
+  phone     String?       @db.VarChar(20)
+  email     String?       @db.VarChar(150)
+  membership String       @default("REGULAR") @db.VarChar(50) // REGULAR, VIP, MEMBER
+  createdAt DateTime      @default(now())
   transactions Transaction[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+}
+
+model Setting {
+  id          Int      @id @default(1)
+  storeName   String   @default("CASHMATE STORE") @db.VarChar(100)
+  storeLogo   String?  @db.VarChar(255)
+  address     String?  @db.Text
+  phone       String?  @db.VarChar(20)
+  taxRate     Decimal  @default(0.00) @db.Decimal(5, 2)
+  currency    String   @default("IDR") @db.VarChar(10)
+  receiptNote String?  @db.Text
+  updatedAt   DateTime @updatedAt
 }
 
 model Transaction {
-  id         Int               @id @default(autoincrement())
-  total      Decimal           @db.Decimal(10, 2)
-  discount   Decimal           @default(0) @db.Decimal(10, 2)
-  tax        Decimal           @default(0) @db.Decimal(10, 2)
-  grandTotal Decimal           @db.Decimal(10, 2)
-  userId     Int
-  user       User              @relation(fields: [userId], references: [id])
-  customerId Int?
-  customer   Customer?         @relation(fields: [customerId], references: [id])
-  items      TransactionItem[]
-  payments   Payment[]
-  createdAt  DateTime          @default(now())
+  id             Int               @id @default(autoincrement())
+  invoiceNo      String            @unique @db.VarChar(50)
+  grandTotal     Decimal           @db.Decimal(15, 2)
+  paidAmount     Decimal           @db.Decimal(15, 2)
+  changeAmount   Decimal           @db.Decimal(15, 2)
+  paymentMethod  String            @default("CASH") @db.VarChar(50) // CASH, QRIS, DANA, OVO, GOPAY, TRANSFER
+  discount       Decimal           @default(0.00) @db.Decimal(15, 2)
+  tax            Decimal           @default(0.00) @db.Decimal(15, 2)
+  userId         Int
+  user           User              @relation(fields: [userId], references: [id])
+  customerId     Int?
+  customer       Customer?         @relation(fields: [customerId], references: [id])
+  items          TransactionItem[]
+  payments       Payment[]
+  createdAt      DateTime          @default(now())
 }
 
 model TransactionItem {

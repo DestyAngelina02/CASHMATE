@@ -15,6 +15,8 @@ export default function POSPage() {
   // State Kasir / Cart
   const [cart, setCart] = useState([]);
   const [paidAmount, setPaidAmount] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('CASH');
+  const [discount, setDiscount] = useState(0);
   
   // Checkout State
   const [processing, setProcessing] = useState(false);
@@ -100,7 +102,8 @@ export default function POSPage() {
   };
 
   const totalAmount = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.qty), 0);
-  const changeAmount = parseFloat(paidAmount || 0) - totalAmount;
+  const grandTotal = Math.max(0, totalAmount - parseFloat(discount || 0));
+  const changeAmount = parseFloat(paidAmount || 0) - grandTotal;
 
   const handleCheckout = async () => {
     if (cart.length === 0) return setError('Keranjang masih kosong.');
@@ -112,10 +115,11 @@ export default function POSPage() {
     const payload = {
       userId: 1, // Hardcode admin for now
       totalAmount,
-      grandTotal: totalAmount,
+      grandTotal,
       paidAmount: parseFloat(paidAmount || 0),
       changeAmount: changeAmount > 0 ? changeAmount : 0,
-      paymentMethod: 'CASH',
+      paymentMethod,
+      discount: parseFloat(discount || 0),
       items: cart.map(item => ({
         productId: item.id,
         quantity: item.qty,
@@ -136,6 +140,8 @@ export default function POSPage() {
       // Sukses! Arahkan ke halaman struk
       setCart([]);
       setPaidAmount('');
+      setDiscount(0);
+      setPaymentMethod('CASH');
       router.push(`/transactions/receipt/${json.data.id}`);
       
     } catch (err) {
@@ -247,13 +253,43 @@ export default function POSPage() {
             <span>Total Item</span>
             <span>{cart.reduce((s, i) => s + i.qty, 0)} Pcs</span>
           </div>
+          <div className="flex justify-between items-center mb-1 text-neutral-400 text-sm">
+            <span>Subtotal</span>
+            <span>Rp {totalAmount.toLocaleString('id-ID')}</span>
+          </div>
+          
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-neutral-400 text-sm">Diskon (Rp)</span>
+            <input 
+              type="number"
+              min="0"
+              value={discount}
+              onChange={e => setDiscount(e.target.value)}
+              className="w-24 px-2 py-1 bg-neutral-950 border border-neutral-800 rounded text-right text-sm text-white focus:outline-none focus:border-emerald-500"
+            />
+          </div>
           
           <div className="flex justify-between items-center mb-4 text-xl">
-            <span className="font-bold text-white">Total</span>
-            <span className="font-bold text-emerald-400">Rp {totalAmount.toLocaleString('id-ID')}</span>
+            <span className="font-bold text-white">Total Akhir</span>
+            <span className="font-bold text-emerald-400">Rp {grandTotal.toLocaleString('id-ID')}</span>
           </div>
 
           <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-neutral-400 mb-1.5">Metode Pembayaran</label>
+              <select
+                value={paymentMethod}
+                onChange={e => setPaymentMethod(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-sm font-medium text-white focus:border-emerald-500/50 focus:outline-none transition-colors"
+              >
+                <option value="CASH">CASH (Tunai)</option>
+                <option value="QRIS">QRIS</option>
+                <option value="DANA">DANA</option>
+                <option value="OVO">OVO</option>
+                <option value="GOPAY">GoPay</option>
+                <option value="TRANSFER">Transfer Bank</option>
+              </select>
+            </div>
             <div>
               <label className="block text-xs font-medium text-neutral-400 mb-1.5">Uang Pembayaran (Rp)</label>
               <input

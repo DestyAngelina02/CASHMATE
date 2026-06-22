@@ -9,6 +9,9 @@ import supplierRoutes from './routes/supplierRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
+import customerRoutes from './routes/customerRoutes.js';
+import settingRoutes from './routes/settingRoutes.js';
+import stockRoutes from './routes/stockRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,7 +31,7 @@ app.get('/api', (req, res) => {
   res.json({
     status: 'success',
     message: 'Welcome to Cashmate API',
-    version: '1.0.0'
+    version: '2.0.0'
   });
 });
 
@@ -40,6 +43,9 @@ app.use('/api/suppliers', supplierRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/settings', settingRoutes);
+app.use('/api/stock', stockRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

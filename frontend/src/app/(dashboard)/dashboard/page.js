@@ -1,175 +1,160 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const StatCard = ({ label, value, icon, color, loading }) => (
-  <div className={`p-6 rounded-2xl border bg-neutral-900/50 backdrop-blur-sm ${color} transition-all hover:scale-[1.02] group`}>
-    <div className="flex items-start justify-between mb-4">
-      <span className="text-3xl">{icon}</span>
-      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${color.replace('border-', 'bg-').replace('/20', '/10')} opacity-80`}>
-        Live
-      </span>
-    </div>
-    <p className="text-sm font-medium text-neutral-400 mb-1">{label}</p>
-    {loading ? (
-      <div className="h-9 w-24 bg-neutral-800 rounded-lg animate-pulse" />
-    ) : (
-      <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
-    )}
-  </div>
-);
+const FILTERS = [
+  { label: 'Hari Ini', value: 'today' },
+  { label: 'Minggu', value: 'week' },
+  { label: 'Bulan', value: 'month' },
+  { label: 'Tahun', value: 'year' },
+];
 
 export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [salesData, setSalesData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [period, setPeriod] = useState('week');
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [resStats, resSales] = await Promise.all([
-          fetch(`${API_URL}/dashboard/stats`),
-          fetch(`${API_URL}/reports/sales`)
-        ]);
-        if (!resStats.ok) throw new Error('Gagal mengambil data statistik.');
-        const jsonStats = await resStats.json();
-        const jsonSales = await resSales.json();
-        setStats(jsonStats.data);
-        if (resSales.ok) setSalesData(jsonSales.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
+    setLoading(true);
+    Promise.all([
+      fetch(`${API_URL}/dashboard/stats`).then(r => r.json()),
+      fetch(`${API_URL}/reports/sales?period=${period}`).then(r => r.json()),
+    ]).then(([s, d]) => {
+      setStats(s.data);
+      setSalesData(d.data);
+    }).catch(err => setError(err.message))
+    .finally(() => setLoading(false));
+  }, [period]);
 
-  const cards = [
-    {
-      label: 'Total Produk',
-      value: stats?.totalProducts ?? 0,
-      icon: '📦',
-      color: 'border-emerald-500/20 hover:border-emerald-500/40',
-    },
-    {
-      label: 'Total Pengguna',
-      value: stats?.totalUsers ?? 0,
-      icon: '👥',
-      color: 'border-teal-500/20 hover:border-teal-500/40',
-    },
-    {
-      label: 'Total Pelanggan',
-      value: stats?.totalCustomers ?? 0,
-      icon: '🧑‍🤝‍🧑',
-      color: 'border-cyan-500/20 hover:border-cyan-500/40',
-    },
-    {
-      label: 'Total Transaksi',
-      value: stats?.totalTransactions ?? 0,
-      icon: '🧾',
-      color: 'border-violet-500/20 hover:border-violet-500/40',
-    },
-    {
-      label: 'Total Pendapatan',
-      value: `Rp ${Number(stats?.totalRevenue ?? 0).toLocaleString('id-ID')}`,
-      icon: '💰',
-      color: 'border-amber-500/20 hover:border-amber-500/40',
-    },
+  const dailyData = salesData?.dailyData || [];
+  const maxRev = Math.max(...dailyData.map(d => Number(d.revenue || 0)), 1);
+  const totalRevPeriod = dailyData.reduce((s, d) => s + Number(d.revenue || 0), 0);
+
+  const kpis = [
+    { label: 'Total Produk', value: stats?.totalProducts ?? 0, icon: '📦', color: 'border-emerald-500/20', text: 'text-emerald-400', href: '/inventory/products' },
+    { label: 'Total Pengguna', value: stats?.totalUsers ?? 0, icon: '🔐', color: 'border-teal-500/20', text: 'text-teal-400', href: '/users' },
+    { label: 'Total Pelanggan', value: stats?.totalCustomers ?? 0, icon: '👥', color: 'border-cyan-500/20', text: 'text-cyan-400', href: '/customers' },
+    { label: 'Total Transaksi', value: stats?.totalTransactions ?? 0, icon: '🧾', color: 'border-violet-500/20', text: 'text-violet-400', href: '/sales/transactions' },
+    { label: 'Total Pendapatan', value: `Rp ${Number(stats?.totalRevenue ?? 0).toLocaleString('id-ID')}`, icon: '💰', color: 'border-amber-500/20', text: 'text-amber-400', href: '/analytics/sales' },
+    { label: `Pendapatan (${FILTERS.find(f=>f.value===period)?.label})`, value: `Rp ${totalRevPeriod.toLocaleString('id-ID')}`, icon: '📈', color: 'border-rose-500/20', text: 'text-rose-400', href: '/analytics/sales' },
   ];
 
   return (
     <div>
-      {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-neutral-400 mt-1 text-sm">Ringkasan statistik dan performa bisnis Anda secara real-time.</p>
+        <div className="flex items-center gap-3 mb-1">
+          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+          <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-semibold">Live</span>
+        </div>
+        <p className="text-neutral-500 text-sm">Ringkasan performa bisnis Cashmate secara real-time.</p>
       </div>
 
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
-          ⚠️ {error} &mdash; Pastikan backend berjalan di port 5000.
+          ⚠️ {error} — Pastikan MySQL dan backend aktif di port 5000.
         </div>
       )}
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-10">
-        {cards.map((card) => (
-          <StatCard key={card.label} {...card} loading={loading} />
+      {/* 6 KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+        {kpis.map(k => (
+          <Link key={k.label} href={k.href} className={`p-4 rounded-2xl border ${k.color} bg-neutral-900/40 hover:bg-neutral-800/50 transition-all group cursor-pointer`}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-2xl">{k.icon}</span>
+              <svg className="w-3.5 h-3.5 text-neutral-700 group-hover:text-neutral-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+            </div>
+            <p className="text-[10px] font-semibold text-neutral-600 uppercase tracking-wider line-clamp-1">{k.label}</p>
+            {loading ? <div className="h-6 bg-white/5 rounded animate-pulse mt-1 w-3/4" />
+              : <p className={`text-lg font-bold mt-1 ${k.text} truncate`}>{k.value}</p>}
+          </Link>
         ))}
       </div>
 
-      {/* Chart Area */}
+      {/* Chart + Recent */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 p-6 rounded-2xl border border-neutral-900 bg-neutral-900/50">
-          <h2 className="text-base font-semibold text-white mb-1">Tren Penjualan (7 Hari)</h2>
-          <p className="text-xs text-neutral-500 mb-6">Grafik pendapatan berdasarkan data transaksi.</p>
-          
+        {/* Revenue Chart */}
+        <div className="lg:col-span-2 p-6 rounded-2xl border border-white/5 bg-neutral-900/40">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-base font-semibold text-white">Tren Pendapatan</h2>
+              <p className="text-xs text-neutral-600 mt-0.5">Hover bar untuk detail transaksi</p>
+            </div>
+            <div className="flex gap-1 p-1 bg-neutral-950 rounded-lg border border-white/5">
+              {FILTERS.map(f => (
+                <button key={f.value} onClick={() => setPeriod(f.value)}
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${period === f.value ? 'bg-emerald-500 text-neutral-950' : 'text-neutral-600 hover:text-white'}`}>
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {loading ? (
-             <div className="flex items-end gap-2 h-40">
-               {Array.from({ length: 7 }).map((_, i) => (
-                 <div key={i} className="flex-1 bg-neutral-800 animate-pulse rounded-t-md" style={{ height: `${Math.random() * 100}%` }} />
-               ))}
-             </div>
+            <div className="h-44 bg-white/5 rounded-xl animate-pulse" />
+          ) : dailyData.length === 0 ? (
+            <div className="h-44 flex items-center justify-center text-neutral-700 text-sm">Tidak ada data untuk periode ini.</div>
           ) : (
             <>
-              <div className="flex items-end gap-2 h-40">
-                {salesData?.dailyData?.map((day, i) => {
-                  const maxRev = Math.max(...salesData.dailyData.map(d => Number(d.revenue)), 1);
-                  const h = (Number(day.revenue) / maxRev) * 100;
+              <div className="flex items-end gap-1.5 h-44">
+                {dailyData.map((day, i) => {
+                  const h = (Number(day.revenue || 0) / maxRev) * 100;
                   return (
                     <div key={i} className="flex-1 flex flex-col items-center group relative">
-                       {/* Tooltip */}
-                      <div className="absolute bottom-full mb-2 hidden group-hover:block bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white whitespace-nowrap shadow-xl z-10">
-                        <div className="font-semibold">{day.date}</div>
-                        <div className="text-emerald-400">Rp {Number(day.revenue).toLocaleString('id-ID')}</div>
+                      <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center pointer-events-none z-10">
+                        <div className="bg-neutral-800 border border-white/10 rounded-xl px-3 py-2 text-xs text-white whitespace-nowrap shadow-2xl">
+                          <div className="font-semibold text-neutral-400">{day.date}</div>
+                          <div className="text-emerald-400 font-bold">Rp {Number(day.revenue || 0).toLocaleString('id-ID')}</div>
+                          <div className="text-neutral-500">{day.transactions || 0} transaksi</div>
+                        </div>
+                        <div className="w-2 h-2 bg-neutral-800 border-b border-r border-white/10 rotate-45 -mt-1" />
                       </div>
-                      <div
-                        className={`w-full rounded-t-md transition-all ${h > 0 ? 'bg-gradient-to-t from-emerald-600/30 to-emerald-500/60 hover:from-emerald-600/50 hover:to-emerald-400/80' : 'bg-neutral-800/50'}`}
-                        style={{ height: `${Math.max(h, 2)}%` }}
-                      />
+                      <div className={`w-full rounded-t-lg transition-all ${h > 0 ? 'bg-gradient-to-t from-emerald-700/40 to-emerald-500/70 hover:from-emerald-600/50 hover:to-emerald-400/90' : 'bg-white/5'}`}
+                        style={{ height: `${Math.max(h, 2)}%` }} />
                     </div>
                   );
                 })}
               </div>
-              <div className="flex justify-between mt-2 text-xs text-neutral-600">
-                {salesData?.dailyData?.map(d => (
-                  <span key={d.date} className="flex-1 text-center truncate px-1">{d.date.split(' ')[0]}</span>
+              <div className="flex justify-between mt-2">
+                {dailyData.map((d, i) => (
+                  <span key={i} className="flex-1 text-center text-[9px] text-neutral-700 truncate px-0.5">{(d.date || '').split(' ')[0]}</span>
                 ))}
               </div>
             </>
           )}
         </div>
 
-        <div className="p-6 rounded-2xl border border-neutral-900 bg-neutral-900/50 overflow-hidden flex flex-col">
-          <h2 className="text-base font-semibold text-white mb-1">Transaksi Terkini</h2>
-          <p className="text-xs text-neutral-500 mb-6">Log aktivitas kasir.</p>
-          
-          <div className="space-y-4 flex-1 overflow-y-auto pr-2">
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3"><div className="h-2 w-2 rounded-full bg-neutral-800 shrink-0" /><div className="h-4 bg-neutral-800 rounded w-full animate-pulse" /></div>
-              ))
-            ) : !salesData?.recentTransactions?.length ? (
-               <p className="text-sm text-neutral-500 text-center mt-4">Belum ada transaksi.</p>
-            ) : (
-              salesData.recentTransactions.slice(0, 7).map((trx) => (
-                <div key={trx.id} className="flex justify-between items-start border-b border-neutral-900/50 pb-3 last:border-0 last:pb-0">
-                  <div className="flex items-start gap-3">
-                    <div className="h-2 w-2 mt-1.5 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <div>
-                      <p className="text-sm font-medium text-white">{trx.invoiceNo}</p>
-                      <p className="text-xs text-neutral-500">{new Date(trx.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} • Kasir: {trx.user?.name}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm font-bold text-emerald-400">Rp {Number(trx.grandTotal).toLocaleString('id-ID')}</p>
-                </div>
-              ))
-            )}
+        {/* Recent Transactions */}
+        <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 flex flex-col">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-base font-semibold text-white">Transaksi Terkini</h2>
+            <Link href="/sales/transactions" className="text-xs text-emerald-500 hover:text-emerald-400 transition-colors">Lihat Semua →</Link>
           </div>
+          <div className="flex-1 space-y-3 overflow-y-auto">
+            {loading ? (
+              Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-10 bg-white/5 rounded-xl animate-pulse" />)
+            ) : !salesData?.recentTransactions?.length ? (
+              <p className="text-sm text-neutral-700 text-center mt-6">Belum ada transaksi.</p>
+            ) : salesData.recentTransactions.slice(0, 8).map(t => (
+              <div key={t.id} className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)] shrink-0" />
+                  <div>
+                    <p className="text-xs font-medium text-white font-mono">{t.invoiceNo}</p>
+                    <p className="text-[10px] text-neutral-700">{new Date(t.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                  </div>
+                </div>
+                <p className="text-xs font-bold text-emerald-400">Rp {Number(t.grandTotal).toLocaleString('id-ID')}</p>
+              </div>
+            ))}
+          </div>
+          <Link href="/sales/pos" className="mt-5 block text-center py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/20 transition-all">
+            + Transaksi Baru (POS)
+          </Link>
         </div>
       </div>
     </div>
