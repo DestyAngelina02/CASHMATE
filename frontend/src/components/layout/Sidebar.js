@@ -3,10 +3,12 @@ import Link from 'next/link';
 export default function Sidebar() {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '📊' },
-    { name: 'Transaksi', path: '/transactions', icon: '🧾' },
+    { name: 'Transaksi (POS)', path: '/transactions', icon: '🧾' },
     { name: 'Produk', path: '/products', icon: '📦' },
     { name: 'Kategori', path: '/categories', icon: '🏷️' },
+    { name: 'Supplier', path: '/suppliers', icon: '🚚' },
     { name: 'Pengguna', path: '/users', icon: '👥' },
+    { name: 'Laporan', path: '/reports', icon: '📈' },
   ];
 
   return (

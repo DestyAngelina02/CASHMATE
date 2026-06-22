@@ -8,6 +8,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import supplierRoutes from './routes/supplierRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +39,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
