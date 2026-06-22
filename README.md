@@ -1,79 +1,72 @@
-# CASHMATE
+# Cashmate V2 - Modern Web POS System
 
-Cashmate adalah aplikasi Point of Sale (POS) / Sistem Kasir modern berbasis web. Aplikasi ini dirancang dengan memisahkan arsitektur *Frontend* dan *Backend* untuk memastikan skalabilitas dan performa yang tinggi.
+Cashmate is a full-stack, enterprise-ready Point of Sale (POS) and Inventory Management web application. 
 
-## 🌟 Fitur Utama
-- **Dashboard Interaktif**: Statistik penjualan real-time.
-- **Manajemen Master Data**: Pengelolaan Kategori, Supplier, dan Produk (beserta upload gambar).
-- **Sistem Transaksi (POS)**: Antarmuka kasir yang responsif dengan dukungan kalkulasi otomatis dan pencarian instan (kompatibel dengan Barcode Scanner).
-- **Cetak Struk**: Format struk yang dioptimalkan untuk printer thermal hitam-putih.
-- **Manajemen Pengguna**: Pengelolaan hak akses Admin & Kasir.
+Version 2 features a complete UI overhaul, introducing a clean, dark-themed, glassmorphism design that provides a premium user experience. The application is separated into a Next.js (React) frontend and an Express.js (Node.js) backend utilizing Prisma ORM with MySQL.
 
-## 🛠️ Teknologi yang Digunakan
-- **Frontend**: Next.js 14 (App Router), React, Tailwind CSS.
-- **Backend**: Node.js, Express.js, Prisma ORM, Multer (untuk upload).
-- **Database**: MySQL.
+## 🚀 Key Features
 
----
+*   **Sales Center & POS V2:** Fast and responsive POS terminal with category filtering, barcode search, multi-payment options (including ShopeePay), cart management (hold, clear), and integrated tax calculations.
+*   **Inventory Center:** Complete CRUD for products, automatic stock deduction, low-stock alerts, category & supplier management, and a dedicated Barcode Center for bulk label printing.
+*   **Analytics Center:** Real-time dashboard with KPI cards, dynamic sales revenue charts, and top-performing / low-stock product analysis.
+*   **Customer Management:** Track customer purchases and manage loyalty tiers (Regular, Member, VIP) easily.
+*   **Unified Reports:** Centralized reporting for sales and inventory with options to export to CSV and Print.
+*   **Live Notifications:** Real-time notification bell on the top bar warning about low or depleted stock.
 
-## 🚀 Cara Menjalankan Aplikasi di Lokal
+## 💻 Tech Stack
 
-Aplikasi ini dibagi menjadi dua bagian utama: `backend` dan `frontend`. Anda harus menjalankan keduanya secara bersamaan.
+**Frontend:**
+*   Next.js (App Router)
+*   React 18
+*   Tailwind CSS (Custom dark theme with glassmorphism)
 
-### 1. Persiapan Database (MySQL)
-Pastikan Anda sudah menginstal dan menjalankan server MySQL (contoh: melalui XAMPP atau Docker).
-Buat database baru bernama `cashmate_db`.
+**Backend:**
+*   Node.js & Express.js
+*   Prisma ORM
+*   MySQL Database
+*   Multer (for image uploads)
 
-### 2. Menjalankan Backend
-Buka terminal baru dan arahkan ke folder `backend`:
-```bash
-cd backend
-```
-Instal dependensi:
-```bash
-npm install
-```
-Atur environment variable:
-Buat file `.env` di dalam folder `backend` dan isi dengan konfigurasi database Anda:
-```env
-PORT=5000
-DATABASE_URL="mysql://root:@localhost:3306/cashmate_db"
-```
-Migrasi Database dan Seed Data Awal:
-```bash
-npx prisma db push
-node prisma/seed.js
-```
-Jalankan server backend:
-```bash
-npm run dev
-```
-*Backend akan berjalan di `http://localhost:5000`*
+## 🛠️ Installation & Setup
 
-### 3. Menjalankan Frontend
-Buka terminal baru dan arahkan ke folder `frontend`:
-```bash
-cd frontend
-```
-Instal dependensi:
-```bash
-npm install
-```
-Atur environment variable:
-Buat file `.env.local` di dalam folder `frontend`:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
-```
-Jalankan server frontend:
-```bash
-npm run dev
-```
-*Frontend akan berjalan di `http://localhost:3000`*
+### Prerequisites
+*   Node.js (v18 or newer recommended)
+*   MySQL Server (e.g., via XAMPP)
 
----
+### 1. Database Setup
+1. Start your MySQL server.
+2. Create a new database named `cashmate`.
 
-## 👥 Akun Default (Seeder)
-Jika Anda telah menjalankan `node prisma/seed.js`, Anda dapat menggunakan akun berikut (fitur login akan diimplementasikan pada tahap selanjutnya):
-- **Email:** admin@cashmate.com
-- **Role:** Administrator
+### 2. Backend Setup
+1. Navigate to the backend directory: `cd backend`
+2. Install dependencies: `npm install`
+3. Configure environment variables in `backend/.env`:
+   ```env
+   PORT=5000
+   DATABASE_URL="mysql://root:@localhost:3306/cashmate"
+   ```
+4. Push Prisma schema and seed initial data:
+   ```bash
+   npx prisma db push
+   node prisma/seed.js
+   ```
+5. Start the backend server: `npm run dev` (Runs on port 5000)
+
+### 3. Frontend Setup
+1. Navigate to the frontend directory: `cd frontend`
+2. Install dependencies: `npm install`
+3. Start the frontend server: `npm run dev` (Runs on port 3000)
+
+## 👤 Default Credentials
+*   **Email:** `admin@cashmate.com`
+*   **Password:** `admin123`
+
+## 📁 Project Structure
+
+*   `backend/` - Node.js Express server, Prisma schema, controllers, routes.
+*   `frontend/` - Next.js React application.
+    *   `src/app/(dashboard)/` - Protected V2 dashboard routes (sales, inventory, analytics, etc.)
+    *   `src/app/login/` - Custom dark-themed login page.
+    *   `src/components/layout/` - Sidebar and Topbar navigation.
+
+## 🤝 License
+This project is for educational and portfolio purposes.

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const navGroups = [
@@ -86,6 +86,7 @@ const navGroups = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [openMenus, setOpenMenus] = useState({});
 
   const toggle = (name) => setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }));
@@ -178,7 +179,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-2.5 border-t border-white/5 shrink-0">
-        <button className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium text-rose-500/70 hover:bg-rose-500/10 hover:text-rose-400 transition-all w-full">
+        <button onClick={() => router.push('/login')} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium text-rose-500/70 hover:bg-rose-500/10 hover:text-rose-400 transition-all w-full">
           <span>🚪</span> Keluar
         </button>
       </div>

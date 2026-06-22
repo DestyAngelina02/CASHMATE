@@ -28,7 +28,7 @@ export default function Home() {
 
           <div>
             <a 
-              href="/dashboard" 
+              href="/login" 
               className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-neutral-900 border border-neutral-800 hover:border-neutral-700 hover:bg-neutral-850 transition-all text-neutral-200"
             >
               Masuk Sistem
@@ -57,7 +57,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mb-20">
           <a
-            href="/dashboard"
+            href="/login"
             className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-neutral-950 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transition-all text-center"
           >
             Mulai Demo
