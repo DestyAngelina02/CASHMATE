@@ -23,8 +23,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from public/uploads
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+// Serve static files from public/uploads (Dihapus karena menggunakan Supabase Storage)
+// app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Default route
 app.get('/api', (req, res) => {

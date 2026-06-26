@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs/promises';
 import path from 'path';
+import { uploadToSupabase, deleteFromSupabase } from '../utils/supabase.js';
 
 const prisma = new PrismaClient();
 
@@ -46,7 +47,7 @@ export const createProduct = async (req, res, next) => {
     let imageUrl = null;
 
     if (req.file) {
-      imageUrl = `/uploads/${req.file.filename}`;
+      imageUrl = await uploadToSupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
     }
 
     const newProduct = await prisma.product.create({
@@ -84,16 +85,11 @@ export const updateProduct = async (req, res, next) => {
 
     // Jika ada file gambar baru yang diunggah
     if (req.file) {
-      imageUrl = `/uploads/${req.file.filename}`;
+      imageUrl = await uploadToSupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
       
       // Hapus gambar lama jika ada
       if (existingProduct.image) {
-        try {
-          const oldPath = path.join(process.cwd(), 'public', existingProduct.image);
-          await fs.unlink(oldPath);
-        } catch (err) {
-          console.error('Failed to delete old image:', err);
-        }
+        await deleteFromSupabase(existingProduct.image);
       }
     }
 
@@ -134,12 +130,7 @@ export const deleteProduct = async (req, res, next) => {
 
     // Hapus gambar jika ada
     if (product.image) {
-      try {
-        const imgPath = path.join(process.cwd(), 'public', product.image);
-        await fs.unlink(imgPath);
-      } catch (err) {
-        console.error('Failed to delete image:', err);
-      }
+      await deleteFromSupabase(product.image);
     }
 
     res.json({ status: 'success', message: 'Product deleted successfully' });
