@@ -35,17 +35,25 @@ app.get('/api', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/api/users', userRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/suppliers', supplierRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/transactions', transactionRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/customers', customerRoutes);
-app.use('/api/settings', settingRoutes);
-app.use('/api/stock', stockRoutes);
+// API Router
+const apiRouter = express.Router();
+
+apiRouter.use('/users', userRoutes);
+apiRouter.use('/dashboard', dashboardRoutes);
+apiRouter.use('/categories', categoryRoutes);
+apiRouter.use('/suppliers', supplierRoutes);
+apiRouter.use('/products', productRoutes);
+apiRouter.use('/transactions', transactionRoutes);
+apiRouter.use('/reports', reportRoutes);
+apiRouter.use('/customers', customerRoutes);
+apiRouter.use('/settings', settingRoutes);
+apiRouter.use('/stock', stockRoutes);
+
+// Mount router untuk lokal
+app.use('/api', apiRouter);
+
+// Mount router untuk Netlify Functions
+app.use('/.netlify/functions/api', apiRouter);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
