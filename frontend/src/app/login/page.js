@@ -3,21 +3,43 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate login delay
-    setTimeout(() => {
-      // In a real app, you would validate credentials and store a token here
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_URL}/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Login gagal. Periksa email & password Anda.');
+      }
+
+      // Simpan token ke localStorage
+      localStorage.setItem('token', data.data.token);
+      localStorage.setItem('user', JSON.stringify(data.data.user));
+
       router.push('/dashboard');
-    }, 1000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,13 +58,17 @@ export default function LoginPage() {
           <p className="text-sm text-neutral-500 mt-2">Silakan masuk untuk mengelola toko Anda.</p>
         </div>
 
+        {error && (
+          <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center">
+            ⚠️ {error}
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-xs font-semibold text-neutral-400 mb-1.5 uppercase tracking-wider">Email Admin</label>
+            <label className="block text-xs font-semibold text-neutral-400 mb-1.5 uppercase tracking-wider">Email</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">
-                📧
-              </span>
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">📧</span>
               <input 
                 type="email" 
                 value={email}
@@ -57,9 +83,7 @@ export default function LoginPage() {
           <div>
             <label className="block text-xs font-semibold text-neutral-400 mb-1.5 uppercase tracking-wider">Password</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">
-                🔒
-              </span>
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">🔒</span>
               <input 
                 type="password" 
                 value={password}
@@ -69,14 +93,6 @@ export default function LoginPage() {
                 className="w-full pl-10 pr-4 py-3 bg-neutral-950 border border-white/5 rounded-xl text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
               />
             </div>
-          </div>
-
-          <div className="flex items-center justify-between mt-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="w-4 h-4 rounded border-white/10 bg-neutral-950 text-emerald-500 focus:ring-emerald-500/50" />
-              <span className="text-xs text-neutral-400">Ingat saya</span>
-            </label>
-            <a href="#" className="text-xs text-emerald-500 hover:text-emerald-400 font-medium">Lupa password?</a>
           </div>
 
           <button 
@@ -89,12 +105,13 @@ export default function LoginPage() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-            ) : 'Masuk Sekarang'}
+            ) : null}
+            {loading ? 'Memverifikasi...' : 'Masuk Sekarang'}
           </button>
         </form>
 
         <p className="text-center text-xs text-neutral-500 mt-8">
-          Masuk dengan akun <span className="font-semibold text-neutral-400">admin@cashmate.com</span> / <span className="font-semibold text-neutral-400">admin123</span> untuk demo.
+          Demo: <span className="font-semibold text-neutral-400">admin@cashmate.com</span> / <span className="font-semibold text-neutral-400">admin123</span>
         </p>
       </div>
     </div>

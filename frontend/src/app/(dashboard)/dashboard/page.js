@@ -56,7 +56,7 @@ export default function DashboardPage() {
 
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
-          ⚠️ {error} — Pastikan MySQL dan backend aktif di port 5000.
+          ⚠️ Gagal memuat data: {error}
         </div>
       )}
 
