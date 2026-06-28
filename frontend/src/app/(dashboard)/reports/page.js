@@ -165,6 +165,7 @@ export default function ReportsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
+                {lowStock.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-5 py-10 text-center text-neutral-600">
                       <div className="flex flex-col items-center justify-center">
