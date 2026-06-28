@@ -54,7 +54,6 @@ export const createTransaction = async (req, res, next) => {
           invoiceNo,
           customerId: customerId ? parseInt(customerId, 10) : null,
           userId: parseInt(userId, 10) || 1, // Fallback ke admin jika tidak dikirim (sementara auth belum full)
-          totalAmount: parseFloat(totalAmount),
           discount: parseFloat(discount || 0),
           tax: parseFloat(tax || 0),
           grandTotal: parseFloat(grandTotal),
@@ -84,8 +83,8 @@ export const createTransaction = async (req, res, next) => {
             transactionId: transaction.id,
             productId: prodId,
             quantity: qty,
-            unitPrice: parseFloat(item.unitPrice),
-            subtotal: parseFloat(item.subtotal),
+            price: parseFloat(item.unitPrice || item.price),
+            total: parseFloat(item.subtotal || item.total),
           }
         });
 
