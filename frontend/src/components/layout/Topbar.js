@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { CheckCircle2, AlertTriangle, X } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -58,18 +59,21 @@ export default function Topbar() {
             <div className="absolute right-0 top-full mt-2 w-80 bg-neutral-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
               <div className="p-4 border-b border-white/5 flex items-center justify-between">
                 <span className="text-sm font-semibold text-white">Notifikasi</span>
-                <button onClick={() => setShowNotif(false)} className="text-neutral-600 hover:text-white text-xs">✕</button>
+                <button onClick={() => setShowNotif(false)} className="text-neutral-600 hover:text-white text-xs">
+                  <X className="w-4 h-4" />
+                </button>
               </div>
               <div className="max-h-72 overflow-y-auto">
                 {notifCount === 0 ? (
-                  <div className="p-6 text-center text-neutral-600 text-sm">
-                    <span className="text-2xl block mb-2">✅</span>
+                  <div className="p-6 flex flex-col items-center justify-center text-center text-neutral-600 text-sm">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-500 mb-2" />
                     Tidak ada notifikasi aktif
                   </div>
                 ) : (
                   <div>
-                    <div className="px-4 py-2 bg-amber-500/5 border-b border-white/5">
-                      <p className="text-xs font-semibold text-amber-400">⚠️ Peringatan Stok Rendah ({notifCount})</p>
+                    <div className="px-4 py-2 bg-amber-500/5 border-b border-white/5 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-400" />
+                      <p className="text-xs font-semibold text-amber-400">Peringatan Stok Rendah ({notifCount})</p>
                     </div>
                     {lowStockItems.slice(0, 8).map(item => (
                       <Link key={item.id} href="/inventory/stock" onClick={() => setShowNotif(false)}

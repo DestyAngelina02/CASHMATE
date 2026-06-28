@@ -3,23 +3,29 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import {
+  LayoutDashboard, Receipt, MonitorSmartphone, ClipboardList, CreditCard,
+  Package, Tags, FolderTree, BarChart3, QrCode, Truck,
+  Users, UserSquare, Star, LineChart, PieChart, FileText,
+  Lock, Settings, Store, ReceiptText, LogOut
+} from 'lucide-react';
 
 const navGroups = [
   {
     title: 'Overview',
     items: [
-      { name: 'Dashboard', path: '/dashboard', icon: '⊞' },
+      { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     ]
   },
   {
     title: 'Sales Center',
     items: [
       {
-        name: 'Sales Center', icon: '🧾',
+        name: 'Sales Center', icon: Receipt,
         subItems: [
-          { name: 'POS Terminal', path: '/sales/pos', icon: '🖥️' },
-          { name: 'Transaksi', path: '/sales/transactions', icon: '📋' },
-          { name: 'Riwayat Bayar', path: '/sales/payment-history', icon: '💳' },
+          { name: 'POS Terminal', path: '/sales/pos', icon: MonitorSmartphone },
+          { name: 'Transaksi', path: '/sales/transactions', icon: ClipboardList },
+          { name: 'Riwayat Bayar', path: '/sales/payment-history', icon: CreditCard },
         ]
       },
     ]
@@ -28,13 +34,13 @@ const navGroups = [
     title: 'Inventory',
     items: [
       {
-        name: 'Inventory', icon: '📦',
+        name: 'Inventory', icon: Package,
         subItems: [
-          { name: 'Produk', path: '/inventory/products', icon: '🏷️' },
-          { name: 'Kategori', path: '/inventory/categories', icon: '📁' },
-          { name: 'Manajemen Stok', path: '/inventory/stock', icon: '📊' },
-          { name: 'Barcode Center', path: '/inventory/barcode', icon: '🔲' },
-          { name: 'Supplier', path: '/inventory/suppliers', icon: '🚚' },
+          { name: 'Produk', path: '/inventory/products', icon: Tags },
+          { name: 'Kategori', path: '/inventory/categories', icon: FolderTree },
+          { name: 'Manajemen Stok', path: '/inventory/stock', icon: BarChart3 },
+          { name: 'Barcode Center', path: '/inventory/barcode', icon: QrCode },
+          { name: 'Supplier', path: '/inventory/suppliers', icon: Truck },
         ]
       },
     ]
@@ -43,10 +49,10 @@ const navGroups = [
     title: 'Pelanggan',
     items: [
       {
-        name: 'Customers', icon: '👥',
+        name: 'Customers', icon: Users,
         subItems: [
-          { name: 'Daftar Pelanggan', path: '/customers', icon: '👤' },
-          { name: 'Membership', path: '/customers/membership', icon: '⭐' },
+          { name: 'Daftar Pelanggan', path: '/customers', icon: UserSquare },
+          { name: 'Membership', path: '/customers/membership', icon: Star },
         ]
       },
     ]
@@ -55,10 +61,10 @@ const navGroups = [
     title: 'Analytics',
     items: [
       {
-        name: 'Analytics', icon: '📈',
+        name: 'Analytics', icon: LineChart,
         subItems: [
-          { name: 'Sales Analytics', path: '/analytics/sales', icon: '💰' },
-          { name: 'Produk Analytics', path: '/analytics/products', icon: '📦' },
+          { name: 'Sales Analytics', path: '/analytics/sales', icon: PieChart },
+          { name: 'Produk Analytics', path: '/analytics/products', icon: Package },
         ]
       },
     ]
@@ -66,18 +72,18 @@ const navGroups = [
   {
     title: 'Laporan',
     items: [
-      { name: 'Laporan', path: '/reports', icon: '📄' },
+      { name: 'Laporan', path: '/reports', icon: FileText },
     ]
   },
   {
     title: 'Admin',
     items: [
-      { name: 'Pengguna', path: '/users', icon: '🔐' },
+      { name: 'Pengguna', path: '/users', icon: Lock },
       {
-        name: 'Pengaturan', icon: '⚙️',
+        name: 'Pengaturan', icon: Settings,
         subItems: [
-          { name: 'Profil Toko', path: '/settings/store', icon: '🏪' },
-          { name: 'Template Struk', path: '/settings/receipt', icon: '🧾' },
+          { name: 'Profil Toko', path: '/settings/store', icon: Store },
+          { name: 'Template Struk', path: '/settings/receipt', icon: ReceiptText },
         ]
       },
     ]
@@ -120,6 +126,7 @@ export default function Sidebar() {
                 const hasSub = !!item.subItems;
                 const active = item.path ? isActive(item.path) : isGroupActive(item.subItems);
                 const open = openMenus[item.name] ?? active;
+                const Icon = item.icon;
 
                 return (
                   <div key={item.name}>
@@ -131,7 +138,7 @@ export default function Sidebar() {
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="text-base opacity-80">{item.icon}</span>
+                          <Icon className="w-4 h-4 opacity-80" />
                           <span>{item.name}</span>
                         </div>
                         <svg className={`w-3 h-3 transition-transform opacity-50 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -147,27 +154,30 @@ export default function Sidebar() {
                             : 'text-neutral-500 hover:text-neutral-200 hover:bg-white/5 border border-transparent'
                         }`}
                       >
-                        <span className="text-base opacity-80">{item.icon}</span>
+                        <Icon className="w-4 h-4 opacity-80" />
                         {item.name}
                       </Link>
                     )}
 
                     {hasSub && open && (
                       <div className="mt-0.5 ml-4 pl-2.5 border-l border-white/5 space-y-0.5 pb-1">
-                        {item.subItems.map(sub => (
-                          <Link
-                            key={sub.name}
-                            href={sub.path}
-                            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                              isActive(sub.path)
-                                ? 'bg-emerald-500/10 text-emerald-400'
-                                : 'text-neutral-600 hover:text-neutral-300 hover:bg-white/5'
-                            }`}
-                          >
-                            <span>{sub.icon}</span>
-                            {sub.name}
-                          </Link>
-                        ))}
+                        {item.subItems.map(sub => {
+                          const SubIcon = sub.icon;
+                          return (
+                            <Link
+                              key={sub.name}
+                              href={sub.path}
+                              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                isActive(sub.path)
+                                  ? 'bg-emerald-500/10 text-emerald-400'
+                                  : 'text-neutral-600 hover:text-neutral-300 hover:bg-white/5'
+                              }`}
+                            >
+                              <SubIcon className="w-3.5 h-3.5 opacity-70" />
+                              {sub.name}
+                            </Link>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -180,9 +190,10 @@ export default function Sidebar() {
 
       <div className="p-2.5 border-t border-white/5 shrink-0">
         <button onClick={() => router.push('/login')} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium text-rose-500/70 hover:bg-rose-500/10 hover:text-rose-400 transition-all w-full">
-          <span>🚪</span> Keluar
+          <LogOut className="w-4 h-4" /> Keluar
         </button>
       </div>
     </aside>
   );
 }
+

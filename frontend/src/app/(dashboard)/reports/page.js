@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Download, Printer, BarChart3, Package, Banknote, Receipt, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -59,21 +60,21 @@ export default function ReportsPage() {
           <p className="text-neutral-500 text-sm mt-1">Lihat, filter, dan ekspor laporan bisnis.</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={exportCSV} className="px-4 py-2 bg-white/5 border border-white/10 text-neutral-300 hover:text-white font-medium rounded-lg text-sm transition-all">
-            ⬇️ Export CSV
+          <button onClick={exportCSV} className="flex items-center gap-1.5 px-4 py-2 bg-white/5 border border-white/10 text-neutral-300 hover:text-white font-medium rounded-lg text-sm transition-all">
+            <Download className="w-4 h-4" /> Export CSV
           </button>
-          <button onClick={exportPrint} className="px-4 py-2 bg-white/5 border border-white/10 text-neutral-300 hover:text-white font-medium rounded-lg text-sm transition-all">
-            🖨️ Cetak
+          <button onClick={exportPrint} className="flex items-center gap-1.5 px-4 py-2 bg-white/5 border border-white/10 text-neutral-300 hover:text-white font-medium rounded-lg text-sm transition-all">
+            <Printer className="w-4 h-4" /> Cetak
           </button>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 bg-neutral-900 rounded-xl border border-white/5 mb-6 w-fit">
-        {[{ v: 'sales', l: '📊 Penjualan' }, { v: 'inventory', l: '📦 Inventaris' }].map(t => (
+        {[{ v: 'sales', l: 'Penjualan', icon: <BarChart3 className="w-4 h-4" /> }, { v: 'inventory', l: 'Inventaris', icon: <Package className="w-4 h-4" /> }].map(t => (
           <button key={t.v} onClick={() => setActiveTab(t.v)}
-            className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === t.v ? 'bg-emerald-500 text-neutral-950' : 'text-neutral-500 hover:text-white'}`}>
-            {t.l}
+            className={`flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === t.v ? 'bg-emerald-500 text-neutral-950' : 'text-neutral-500 hover:text-white'}`}>
+            {t.icon} {t.l}
           </button>
         ))}
       </div>
@@ -93,10 +94,10 @@ export default function ReportsPage() {
           {/* Summary Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: 'Total Pendapatan', value: `Rp ${totalRev.toLocaleString('id-ID')}`, icon: '💰', color: 'text-emerald-400' },
-              { label: 'Total Transaksi', value: totalTrx, icon: '🧾', color: 'text-blue-400' },
-              { label: 'Rata-rata/Transaksi', value: `Rp ${totalTrx > 0 ? Math.round(totalRev / totalTrx).toLocaleString('id-ID') : 0}`, icon: '📊', color: 'text-violet-400' },
-              { label: 'Produk Terjual', value: salesData?.recentTransactions?.reduce((s, t) => s + (t.items?.length || 0), 0) || 0, icon: '📦', color: 'text-amber-400' },
+              { label: 'Total Pendapatan', value: `Rp ${totalRev.toLocaleString('id-ID')}`, icon: <Banknote className="w-6 h-6 text-emerald-400" />, color: 'text-emerald-400' },
+              { label: 'Total Transaksi', value: totalTrx, icon: <Receipt className="w-6 h-6 text-blue-400" />, color: 'text-blue-400' },
+              { label: 'Rata-rata/Transaksi', value: `Rp ${totalTrx > 0 ? Math.round(totalRev / totalTrx).toLocaleString('id-ID') : 0}`, icon: <BarChart3 className="w-6 h-6 text-violet-400" />, color: 'text-violet-400' },
+              { label: 'Produk Terjual', value: salesData?.recentTransactions?.reduce((s, t) => s + (t.items?.length || 0), 0) || 0, icon: <Package className="w-6 h-6 text-amber-400" />, color: 'text-amber-400' },
             ].map(k => (
               <div key={k.label} className="p-4 rounded-2xl border border-white/5 bg-neutral-900/40">
                 <span className="text-xl">{k.icon}</span>
@@ -149,7 +150,9 @@ export default function ReportsPage() {
         <div>
           <div className="rounded-2xl border border-white/5 bg-neutral-900/40 overflow-hidden">
             <div className="px-5 py-4 border-b border-white/5">
-              <h2 className="text-sm font-semibold text-white">⚠️ Laporan Stok Kritis</h2>
+              <h2 className="text-sm font-semibold text-amber-400 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" /> Laporan Stok Kritis
+              </h2>
             </div>
             <table className="w-full text-sm">
               <thead className="border-b border-white/5 text-xs uppercase font-semibold text-neutral-600">
@@ -162,8 +165,14 @@ export default function ReportsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {lowStock.length === 0 ? (
-                  <tr><td colSpan={5} className="px-5 py-10 text-center text-neutral-600">✅ Semua stok dalam kondisi aman!</td></tr>
+                  <tr>
+                    <td colSpan={5} className="px-5 py-10 text-center text-neutral-600">
+                      <div className="flex flex-col items-center justify-center">
+                        <CheckCircle2 className="w-8 h-8 text-emerald-500 mb-2" />
+                        Semua stok dalam kondisi aman!
+                      </div>
+                    </td>
+                  </tr>
                 ) : lowStock.map(p => (
                   <tr key={p.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-5 py-3.5 font-medium text-white">{p.name}</td>

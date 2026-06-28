@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AlertCircle, Mail, Lock } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -59,8 +60,8 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center">
-            ⚠️ {error}
+          <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-center justify-center gap-2">
+            <AlertCircle className="w-4 h-4" /> {error}
           </div>
         )}
 
@@ -68,7 +69,9 @@ export default function LoginPage() {
           <div>
             <label className="block text-xs font-semibold text-neutral-400 mb-1.5 uppercase tracking-wider">Email</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">📧</span>
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">
+                <Mail className="w-4 h-4" />
+              </span>
               <input 
                 type="email" 
                 value={email}
@@ -83,7 +86,9 @@ export default function LoginPage() {
           <div>
             <label className="block text-xs font-semibold text-neutral-400 mb-1.5 uppercase tracking-wider">Password</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">🔒</span>
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-neutral-500">
+                <Lock className="w-4 h-4" />
+              </span>
               <input 
                 type="password" 
                 value={password}

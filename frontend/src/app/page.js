@@ -1,4 +1,5 @@
 import React from 'react';
+import { BarChart2, Package, Receipt } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -80,7 +81,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-8 rounded-2xl border border-neutral-900 bg-neutral-900/50 backdrop-blur-sm hover:border-emerald-500/30 transition-all group">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-6 font-semibold group-hover:bg-emerald-500/20 transition-all">
-                📊
+                <BarChart2 className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Dashboard Real-Time</h3>
               <p className="text-neutral-400 text-sm leading-relaxed">
@@ -90,7 +91,7 @@ export default function Home() {
 
             <div className="p-8 rounded-2xl border border-neutral-900 bg-neutral-900/50 backdrop-blur-sm hover:border-teal-500/30 transition-all group">
               <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 mb-6 font-semibold group-hover:bg-teal-500/20 transition-all">
-                📦
+                <Package className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Manajemen Stok Otomatis</h3>
               <p className="text-neutral-400 text-sm leading-relaxed">
@@ -100,7 +101,7 @@ export default function Home() {
 
             <div className="p-8 rounded-2xl border border-neutral-900 bg-neutral-900/50 backdrop-blur-sm hover:border-cyan-500/30 transition-all group">
               <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-6 font-semibold group-hover:bg-cyan-500/20 transition-all">
-                🧾
+                <Receipt className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Kasir Cepat & Cetak Struk</h3>
               <p className="text-neutral-400 text-sm leading-relaxed">

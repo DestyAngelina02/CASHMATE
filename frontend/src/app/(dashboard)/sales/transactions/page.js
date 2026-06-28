@@ -49,7 +49,7 @@ export default function TransactionHistoryPage() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <input type="text" placeholder="🔍 Cari invoice atau kasir..."
+        <input type="text" placeholder="Cari invoice atau kasir..."
           value={search} onChange={e => setSearch(e.target.value)}
           className="flex-1 px-4 py-2.5 rounded-xl bg-neutral-900 border border-white/5 text-neutral-200 focus:outline-none focus:border-emerald-500/50 text-sm transition-colors" />
         <select value={filterMethod} onChange={e => setFilterMethod(e.target.value)}

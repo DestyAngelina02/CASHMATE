@@ -1,8 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Banknote, Smartphone, CreditCard, Landmark } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+const getMethodIcon = (method, className) => {
+  const icons = {
+    CASH: <Banknote className={className} />,
+    QRIS: <Smartphone className={className} />,
+    TRANSFER: <Landmark className={className} />,
+  };
+  return icons[method] || <CreditCard className={className} />;
+};
 
 export default function PaymentHistoryPage() {
   const [transactions, setTransactions] = useState([]);
@@ -22,8 +32,6 @@ export default function PaymentHistoryPage() {
     return acc;
   }, {});
 
-  const methodIcons = { CASH: '💵', QRIS: '📱', DANA: '💙', OVO: '💜', GOPAY: '💚', SHOPEEPAY: '🧡', TRANSFER: '🏦' };
-
   return (
     <div>
       <div className="mb-8">
@@ -34,7 +42,7 @@ export default function PaymentHistoryPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
         {Object.entries(totals).map(([method, total]) => (
           <div key={method} className="p-5 rounded-2xl border border-white/5 bg-neutral-900/40">
-            <span className="text-2xl">{methodIcons[method] || '💳'}</span>
+            {getMethodIcon(method, "w-6 h-6 text-neutral-400")}
             <p className="text-xs font-semibold text-neutral-500 mt-3 uppercase tracking-wider">{method}</p>
             <p className="text-xl font-bold text-white mt-1">Rp {total.toLocaleString('id-ID')}</p>
           </div>
@@ -62,7 +70,9 @@ export default function PaymentHistoryPage() {
             ) : transactions.map(t => (
               <tr key={t.id} className="hover:bg-white/5 transition-colors">
                 <td className="px-5 py-3.5 font-mono text-xs text-white">{t.invoiceNo}</td>
-                <td className="px-5 py-3.5 text-neutral-400">{methodIcons[t.paymentMethod]} {t.paymentMethod}</td>
+                <td className="px-5 py-3.5 text-neutral-400 flex items-center gap-2">
+                  {getMethodIcon(t.paymentMethod, "w-4 h-4")} {t.paymentMethod}
+                </td>
                 <td className="px-5 py-3.5 font-bold text-emerald-400">Rp {Number(t.paidAmount || t.grandTotal).toLocaleString('id-ID')}</td>
                 <td className="px-5 py-3.5 text-neutral-400">Rp {Number(t.changeAmount || 0).toLocaleString('id-ID')}</td>
                 <td className="px-5 py-3.5 text-neutral-500 text-xs">{new Date(t.createdAt).toLocaleString('id-ID')}</td>

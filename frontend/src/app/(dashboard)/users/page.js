@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { AlertCircle, X } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -99,7 +100,7 @@ export default function UsersPage() {
         <input
           id="input-search-user"
           type="text"
-          placeholder="🔍  Cari nama atau email..."
+          placeholder="Cari nama atau email..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="w-full max-w-sm px-4 py-2.5 rounded-xl bg-neutral-900 border border-neutral-800 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
@@ -107,8 +108,8 @@ export default function UsersPage() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
-          ⚠️ {error}
+        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" /> {error}
         </div>
       )}
 
@@ -187,7 +188,9 @@ export default function UsersPage() {
           <div className="bg-neutral-950 border border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">Tambah Pengguna Baru</h2>
-              <button onClick={() => setShowModal(false)} className="text-neutral-400 hover:text-white transition-colors">✕</button>
+              <button onClick={() => setShowModal(false)} className="text-neutral-400 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
             {modalError && (
