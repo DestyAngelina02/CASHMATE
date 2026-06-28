@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { uploadToSupabase, deleteFromSupabase } from '../utils/supabase.js';
-
-const prisma = new PrismaClient();
 
 export const getProducts = async (req, res, next) => {
   try {

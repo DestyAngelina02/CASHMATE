@@ -1,7 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
+import prisma from '../utils/prisma.js';
 export const getStockMovements = async (req, res) => {
   try {
     const movements = await prisma.stockMovement.findMany({

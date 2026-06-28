@@ -1,7 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
+import prisma from '../utils/prisma.js';
 // Fungsi helper untuk men-generate Invoice Number
 const generateInvoiceNumber = async () => {
   const date = new Date();

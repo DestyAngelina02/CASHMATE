@@ -1,7 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
+import prisma from '../utils/prisma.js';
 export const getDashboardStats = async (req, res, next) => {
   try {
     const totalProducts = await prisma.product.count();
