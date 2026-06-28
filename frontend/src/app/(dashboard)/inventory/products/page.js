@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 const PAGE_SIZE = 10;
 
 export default function InventoryProductsPage() {
@@ -153,7 +152,7 @@ export default function InventoryProductsPage() {
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-lg overflow-hidden bg-neutral-800 shrink-0">
-                        {prod.image ? <img src={`${BACKEND_URL}${prod.image}`} alt={prod.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-lg">📦</div>}
+                        {prod.image ? <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-lg">📦</div>}
                       </div>
                       <span className="font-medium text-white line-clamp-1">{prod.name}</span>
                     </div>

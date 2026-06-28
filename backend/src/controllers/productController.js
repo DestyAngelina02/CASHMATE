@@ -47,7 +47,13 @@ export const createProduct = async (req, res, next) => {
     let imageUrl = null;
 
     if (req.file) {
-      imageUrl = await uploadToSupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
+      try {
+        imageUrl = await uploadToSupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
+      } catch (uploadError) {
+        console.warn('[WARN] Image upload failed, saving product without image:', uploadError.message);
+        // Tetap lanjutkan simpan produk tanpa gambar
+        imageUrl = null;
+      }
     }
 
     const newProduct = await prisma.product.create({
@@ -85,11 +91,16 @@ export const updateProduct = async (req, res, next) => {
 
     // Jika ada file gambar baru yang diunggah
     if (req.file) {
-      imageUrl = await uploadToSupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
-      
-      // Hapus gambar lama jika ada
-      if (existingProduct.image) {
-        await deleteFromSupabase(existingProduct.image);
+      try {
+        const newImageUrl = await uploadToSupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
+        // Hapus gambar lama jika ada
+        if (existingProduct.image) {
+          await deleteFromSupabase(existingProduct.image);
+        }
+        imageUrl = newImageUrl;
+      } catch (uploadError) {
+        console.warn('[WARN] Image upload failed, keeping existing image:', uploadError.message);
+        // Tetap gunakan gambar lama
       }
     }
 
